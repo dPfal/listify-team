@@ -13,6 +13,7 @@ import RenameListModal from "./RenameListModal";
 import AddItemModal from "./AddItemModal";
 import EditItemModal from "./EditItemModal";
 import ConfirmModal from "./ConfirmModal";
+import ProfileMenu from "./ProfileMenu";
 
 function Dashboard() {
   const [listName, setListName] = useState("My Grocery List");
@@ -484,10 +485,8 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="phone-frame">
         <div className="dashboard-topbar">
-          <h2 className="greeting">👋 Hi, {username}!</h2>{" "}
-          <button className="icon-button logout-button" onClick={handleLogout}>
-            <FiLogOut />
-          </button>
+          <h2 className="greeting">👋 Hi, {username}!</h2>
+          <ProfileMenu userEmail={username} onLogout={handleLogout} />
         </div>
 
         <div className="title-row">
