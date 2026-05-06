@@ -1,24 +1,31 @@
+## 📌 Assessment 2 Requirements
 
-**Assessment 1.2 (Total Marks **20**)**
+This project is developed as part of IFN636 Assessment 2. The following components are included:
 
-Assignment: **Software requirements analysis and design (**Full-Stack CRUD Application Development with DevOps Practices**)**
+### 1. Software Requirements Specification (SRS)
+- Basic SRS documentation outlining system scope, functional and non-functional requirements.
 
+### 2. Design Patterns and OOP Principles
+- Application of appropriate design patterns.
+- Use of Object-Oriented Programming principles such as encapsulation, modularity, and separation of concerns.
 
----
+### 3. API Testing
+- Testing backend API endpoints using tools such as Postman or automated scripts.
 
-**Objective**
+### 4. Functional Testing
+- Verification of system functionality based on defined requirements.
 
-For this assessment, you have already been assigned a project. Your task is to develop a system that implements CRUD (Create, Read, Update, Delete) operations based on the selected project. The system should include both a user panel and an admin panel. Depending on the nature of your chosen project, you may decide how many CRUD operations are required to support the functionality of the system. You have been provided with a starter project that includes user authentication using Node.js, React.js, and MongoDB, your should extend this application based on your assigned project requirements. Ensure that the implemented features are appropriate and meaningful for your selected project. Your project should include the following:
-In this assignment you will complete the following tasks:
+### 5. CI/CD Pipeline
+- Implementation of continuous integration and continuous deployment using GitHub Actions.
 
-* **Basic Version Control using GitHub**
-* **Development, CI/CD Integration for Automated Deployment**
-* **Project report**
+### 6. Load Balancing and Load Testing
+- System performance testing under load conditions.
+- Use of load balancing techniques where applicable.
 
- 
----
+### 7. Team Collaboration
+- Use of GitHub for version control.
+- Branching strategy and pull request workflow.
+- Clear contribution tracking among team members.
 
-**GitHub link of the starter project: **[https://github.com/nahaQUT/sampleapp_IFQ636.git](https://github.com/nahaQUT/sampleapp_IFQ636.git)
-
----
-
+### 8. Report
+- A comprehensive report documenting the system design, implementation, testing, and evaluation.
