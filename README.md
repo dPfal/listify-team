@@ -1,4 +1,4 @@
-## 📌 Assessment 2 Requirements
+## Assessment 2 Requirements
 
 This project is developed as part of IFN636 Assessment 2. The following components are included:
 
