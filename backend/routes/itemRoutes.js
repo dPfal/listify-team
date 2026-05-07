@@ -16,3 +16,4 @@ router.delete("/:id", protect, deleteItem);
 router.get("/", protect, getItems);
 router.delete("/", protect, clearAllItems);
 module.exports = router;
+
