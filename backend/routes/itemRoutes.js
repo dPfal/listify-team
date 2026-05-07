@@ -9,10 +9,12 @@ const {
   clearAllItems,
 } = require("../controllers/itemController");
 const { protect } = require("../middleware/authMiddleware");
+const loggingMiddleware = require("../middleware/loggingMiddleware");
+const { validateItemInput } = require("../middleware/validationMiddleware");
 
-router.post("/", protect, createItem);
-router.put("/:id", protect, updateItem);
-router.delete("/:id", protect, deleteItem);
-router.get("/", protect, getItems);
-router.delete("/", protect, clearAllItems);
+router.post("/", protect, loggingMiddleware,validateItemInput, createItem);
+router.put("/:id", protect, loggingMiddleware,validateItemInput, updateItem);
+router.delete("/:id", protect, loggingMiddleware, deleteItem);
+router.get("/", protect, loggingMiddleware, getItems);
+router.delete("/", protect, loggingMiddleware, clearAllItems);
 module.exports = router;
