@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   FiLogOut,
   FiEdit2,
@@ -15,6 +16,7 @@ import EditItemModal from "./EditItemModal";
 import ConfirmModal from "./ConfirmModal";
 
 function Dashboard() {
+  const { listId } = useParams(); // Grabs the ID from the URL!
   const [listName, setListName] = useState("My Grocery List");
   const [groceryData, setGroceryData] = useState([]);
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
@@ -66,6 +68,7 @@ function Dashboard() {
     }, []);
   };
 
+  // Note: We might need to update this later to fetch the specific List name based on listId!
   useEffect(() => {
     const fetchListName = async () => {
       try {
@@ -93,12 +96,13 @@ function Dashboard() {
     fetchListName();
   }, []);
 
+  // UPDATED: Now grabs items for this SPECIFIC list!
   useEffect(() => {
     const fetchItems = async () => {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch("/api/items", {
+        const response = await fetch(`/api/items/${listId}`, { 
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -120,7 +124,7 @@ function Dashboard() {
     };
 
     fetchItems();
-  }, []);
+  }, [listId]); // Added listId as a dependency
 
   const handleAddItem = () => {
     setIsAddModalOpen(true);
@@ -176,6 +180,7 @@ function Dashboard() {
     }
   };
 
+  // UPDATED: Now sends the listId to the backend!
   const handleCreateItem = async newItem => {
     try {
       const token = localStorage.getItem("token");
@@ -190,6 +195,7 @@ function Dashboard() {
           name: newItem.name,
           quantity: newItem.quantity,
           category: newItem.category,
+          listId: listId, // BOOM! Backend is happy now.
         }),
       });
 
@@ -454,11 +460,12 @@ function Dashboard() {
     }
   };
 
+  // UPDATED: Now targets the specific list for clearing!
   const handleConfirmClear = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("/api/items", {
+      const response = await fetch(`/api/items/clear/${listId}`, { 
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

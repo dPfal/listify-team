@@ -1,17 +1,35 @@
-// config/db.js
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-// Set strictQuery explicitly to suppress the warning
-//mongoose.set('strictQuery', true);
-
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);  // Remove deprecated options
-    console.log("MongoDB connected successfully");
-  } catch (error) {
-    console.error("MongoDB connection error:", error.message);
-    process.exit(1);
+// DESIGN PATTERN 1: SINGLETON
+class DatabaseService {
+  constructor() {
+    if (!DatabaseService.instance) {
+      this.isConnected = false;
+      DatabaseService.instance = this;
+    }
+    return DatabaseService.instance;
   }
-};
 
-module.exports = connectDB;
+  async connect() {
+    if (this.isConnected) {
+      console.log('Using existing database connection');
+      return;
+    }
+
+    try {
+      mongoose.set('strictQuery', false); 
+
+      // THE NUCLEAR OPTION: Hard-coded string bypassing the .env file entirely!
+      const conn = await mongoose.connect("mongodb://127.0.0.1:27017/listify");
+      
+      this.isConnected = true;
+      console.log(`MongoDB Connected (Singleton): ${conn.connection.host}`);
+    } catch (error) {
+      console.error(`Error: ${error.message}`);
+      process.exit(1);
+    }
+  }
+}
+
+const dbInstance = new DatabaseService();
+module.exports = dbInstance;

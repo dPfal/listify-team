@@ -1,13 +1,17 @@
 const Item = require("../models/Item");
 
 const createItem = async (req, res) => {
-  const { name, quantity, category } = req.body;
+  // 1. ADDED listId to the destructured body!
+  const { name, quantity, category, listId } = req.body;
 
   try {
     if (!name || !name.trim()) {
-      return res.status(400).json({
-        message: "Item name is required",
-      });
+      return res.status(400).json({ message: "Item name is required" });
+    }
+    
+    // 2. Add a quick check to make sure the frontend sent a list ID
+    if (!listId) {
+      return res.status(400).json({ message: "List ID is required" });
     }
 
     const item = await Item.create({
@@ -15,6 +19,7 @@ const createItem = async (req, res) => {
       quantity: quantity || 1,
       category: category || "Uncategorized",
       user: req.user.id,
+      list: listId, // 3. BOOM! The item is now securely attached to the list
     });
 
     return res.status(201).json(item);
@@ -33,15 +38,11 @@ const updateItem = async (req, res) => {
     const item = await Item.findById(req.params.id);
 
     if (!item) {
-      return res.status(404).json({
-        message: "Item not found",
-      });
+      return res.status(404).json({ message: "Item not found" });
     }
 
     if (item.user.toString() !== req.user.id) {
-      return res.status(401).json({
-        message: "Not authorized",
-      });
+      return res.status(401).json({ message: "Not authorized" });
     }
 
     item.name = name ?? item.name;
@@ -65,22 +66,16 @@ const deleteItem = async (req, res) => {
     const item = await Item.findById(req.params.id);
 
     if (!item) {
-      return res.status(404).json({
-        message: "Item not found",
-      });
+      return res.status(404).json({ message: "Item not found" });
     }
 
     if (item.user.toString() !== req.user.id) {
-      return res.status(401).json({
-        message: "Not authorized",
-      });
+      return res.status(401).json({ message: "Not authorized" });
     }
 
     await item.deleteOne();
 
-    return res.status(200).json({
-      message: "Item deleted",
-    });
+    return res.status(200).json({ message: "Item deleted" });
   } catch (error) {
     return res.status(500).json({
       message: "Failed to delete item",
@@ -88,9 +83,14 @@ const deleteItem = async (req, res) => {
     });
   }
 };
+
 const getItems = async (req, res) => {
   try {
-    const items = await Item.find({ user: req.user.id }).sort({
+    // UPDATED: Now it specifically looks for items that match req.params.listId
+    const items = await Item.find({ 
+        user: req.user.id,
+        list: req.params.listId // This ensures you only get veggies for the Grocery List!
+    }).sort({
       createdAt: -1,
     });
 
@@ -102,12 +102,17 @@ const getItems = async (req, res) => {
     });
   }
 };
+
 const clearAllItems = async (req, res) => {
   try {
-    await Item.deleteMany({ user: req.user.id });
+    // UPDATED: Only deletes items inside the specific list!
+    await Item.deleteMany({ 
+        user: req.user.id,
+        list: req.params.listId 
+    });
 
     return res.status(200).json({
-      message: "All items deleted successfully",
+      message: "List items cleared successfully",
     });
   } catch (error) {
     return res.status(500).json({
@@ -116,6 +121,7 @@ const clearAllItems = async (req, res) => {
     });
   }
 };
+
 module.exports = {
   clearAllItems,
   createItem,

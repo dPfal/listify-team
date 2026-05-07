@@ -24,6 +24,12 @@ const itemSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    // ADDED THIS: Now the item knows which specific list it belongs to - update the list (SeulaKoo)
+    list: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "List",
+      required: true, 
+    }
   },
   { timestamps: true },
 );
