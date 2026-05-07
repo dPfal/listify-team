@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import {
-  FiLogOut,
   FiEdit2,
   FiPlus,
   FiX,
@@ -13,6 +12,7 @@ import RenameListModal from "./RenameListModal";
 import AddItemModal from "./AddItemModal";
 import EditItemModal from "./EditItemModal";
 import ConfirmModal from "./ConfirmModal";
+import ProfileMenu from "./ProfileMenu";
 
 function Dashboard() {
   const [listName, setListName] = useState("My Grocery List");
@@ -30,6 +30,11 @@ function Dashboard() {
   const [username, setUsername] = useState(
     localStorage.getItem("username") || ""
   );
+  const [displayName, setDisplayName] = useState(
+    localStorage.getItem("displayName") ||
+      localStorage.getItem("username") ||
+      ""
+  );
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
@@ -37,8 +42,16 @@ function Dashboard() {
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
+    const storedDisplayName = localStorage.getItem("displayName");
+
     if (storedUsername) {
       setUsername(storedUsername);
+    }
+
+    if (storedDisplayName) {
+      setDisplayName(storedDisplayName);
+    } else if (storedUsername) {
+      setDisplayName(storedUsername);
     }
   }, []);
 
@@ -157,6 +170,7 @@ function Dashboard() {
   const handleConfirmLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
+    localStorage.removeItem("displayName");
     setIsLogoutModalOpen(false);
     window.location.href = "/login";
   };
@@ -560,10 +574,8 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="phone-frame">
         <div className="dashboard-topbar">
-          <h2 className="greeting">👋 Hi, {username}!</h2>{" "}
-          <button className="icon-button logout-button" onClick={handleLogout}>
-            <FiLogOut />
-          </button>
+          <h2 className="greeting">👋 Hi, {displayName}!</h2>
+          <ProfileMenu userEmail={username} onLogout={handleLogout} />
         </div>
 
         <div className="title-row">
