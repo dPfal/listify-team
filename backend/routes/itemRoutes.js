@@ -10,13 +10,14 @@ const {
   getItemSuggestions,
 } = require("../controllers/itemController.js");
 const { protect } = require("../middleware/authMiddleware");
+const loggingMiddleware = require("../middleware/loggingMiddleware");
+const { validateItemInput } = require("../middleware/validationMiddleware");
 
-router.post("/", protect, createItem);
-router.get("/", protect, getItems);
-router.get("/suggestions", protect, getItemSuggestions);
-router.put("/:id", protect, updateItem);
-router.delete("/:id", protect, deleteItem);
-router.delete("/", protect, clearAllItems);
-
-
+module.exports = router;
+router.post("/", protect, loggingMiddleware,validateItemInput, createItem);
+router.get("/", protect, loggingMiddleware, getItems);
+router.get("/suggestions", protect,loggingMiddleware, validateItemInpu, getItemSuggestions);
+router.put("/:id", protect, loggingMiddleware, validateItemInput, updateItem);
+router.delete("/:id", protect, loggingMiddleware, deleteItem);
+router.delete("/", protect, loggingMiddleware, clearAllItems);
 module.exports = router;

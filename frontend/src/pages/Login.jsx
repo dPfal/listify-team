@@ -60,7 +60,7 @@ function Login() {
         server: "",
       });
 
-      const response = await fetch("http://localhost:5001/api/auth/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,6 +72,8 @@ function Login() {
       });
 
       const data = await response.json();
+      console.log("login response:", data);
+      console.log("username:", data.user?.username);
 
       if (!response.ok) {
         setErrors(prev => ({
