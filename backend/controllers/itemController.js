@@ -1,7 +1,7 @@
 const Item = require("../models/Item");
 
 const createItem = async (req, res) => {
-  const { name, quantity, category } = req.body;
+  const { name, quantity, category, list } = req.body;
 
   try {
     if (!name || !name.trim()) {
@@ -10,11 +10,18 @@ const createItem = async (req, res) => {
       });
     }
 
+    if (!list) {
+      return res.status(400).json({
+        message: "List ID is required",
+      });
+    }
+
     const item = await Item.create({
       name: name.trim(),
       quantity: quantity || 1,
       category: category || "Uncategorized",
       user: req.user.id,
+      list,
     });
 
     return res.status(201).json(item);
@@ -27,7 +34,7 @@ const createItem = async (req, res) => {
 };
 
 const updateItem = async (req, res) => {
-  const { name, quantity, category, checked } = req.body;
+  const { name, quantity, category, purchased } = req.body;
 
   try {
     const item = await Item.findById(req.params.id);
@@ -47,7 +54,7 @@ const updateItem = async (req, res) => {
     item.name = name ?? item.name;
     item.quantity = quantity ?? item.quantity;
     item.category = category ?? item.category;
-    item.purchased = checked ?? item.purchased;
+    item.purchased = purchased ?? item.purchased;
 
     const updatedItem = await item.save();
 
@@ -90,7 +97,13 @@ const deleteItem = async (req, res) => {
 };
 const getItems = async (req, res) => {
   try {
-    const items = await Item.find({ user: req.user.id }).sort({
+    const filter = { user: req.user.id };
+
+    if (req.query.list) {
+      filter.list = req.query.list;
+    }
+
+    const items = await Item.find(filter).sort({
       createdAt: -1,
     });
 
@@ -102,9 +115,49 @@ const getItems = async (req, res) => {
     });
   }
 };
+const getItemSuggestions = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    if (!query || !query.trim()) {
+      return res.status(200).json([]);
+    }
+
+    const filter = {
+      user: req.user.id,
+      name: {
+        $regex: `^${query.trim()}`,
+        $options: "i",
+      },
+    };
+
+    if (req.query.list) {
+      filter.list = req.query.list;
+    }
+
+    const suggestions = await Item.find(filter)
+      .select("name")
+      .limit(5);
+
+    const uniqueNames = [...new Set(suggestions.map((item) => item.name))];
+
+    return res.status(200).json(uniqueNames);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch item suggestions",
+      error: error.message,
+    });
+  }
+};
 const clearAllItems = async (req, res) => {
   try {
-    await Item.deleteMany({ user: req.user.id });
+    const filter = { user: req.user.id };
+
+    if (req.query.list) {
+      filter.list = req.query.list;
+    }
+
+    await Item.deleteMany(filter);
 
     return res.status(200).json({
       message: "All items deleted successfully",
@@ -122,4 +175,5 @@ module.exports = {
   updateItem,
   deleteItem,
   getItems,
+  getItemSuggestions,
 };

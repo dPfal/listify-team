@@ -82,7 +82,7 @@ function Login() {
       }
 
       localStorage.setItem("token", data.token);
-      localStorage.setItem("username", data.username);
+      localStorage.setItem("username", data.user.username);
 
       window.location.href = "/dashboard";
     } catch (error) {
