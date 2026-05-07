@@ -102,6 +102,34 @@ const getItems = async (req, res) => {
     });
   }
 };
+const getItemSuggestions = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    if (!query || !query.trim()) {
+      return res.status(200).json([]);
+    }
+
+    const suggestions = await Item.find({
+      user: req.user.id,
+      name: {
+        $regex: `^${query.trim()}`,
+        $options: "i",
+      },
+    })
+      .select("name")
+      .limit(5);
+
+    const uniqueNames = [...new Set(suggestions.map((item) => item.name))];
+
+    return res.status(200).json(uniqueNames);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch item suggestions",
+      error: error.message,
+    });
+  }
+};
 const clearAllItems = async (req, res) => {
   try {
     await Item.deleteMany({ user: req.user.id });
@@ -122,4 +150,5 @@ module.exports = {
   updateItem,
   deleteItem,
   getItems,
+  getItemSuggestions,
 };
