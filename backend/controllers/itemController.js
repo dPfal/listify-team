@@ -27,7 +27,7 @@ const createItem = async (req, res) => {
 };
 
 const updateItem = async (req, res) => {
-  const { name, quantity, category, checked } = req.body;
+  const { name, quantity, category, purchased } = req.body;
 
   try {
     const item = await Item.findById(req.params.id);
@@ -47,7 +47,7 @@ const updateItem = async (req, res) => {
     item.name = name ?? item.name;
     item.quantity = quantity ?? item.quantity;
     item.category = category ?? item.category;
-    item.purchased = checked ?? item.purchased;
+    item.purchased = purchased ?? item.purchased;
 
     const updatedItem = await item.save();
 
