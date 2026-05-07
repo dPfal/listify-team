@@ -27,6 +27,11 @@ function Dashboard() {
   const [username, setUsername] = useState(
     localStorage.getItem("username") || ""
   );
+  const [displayName, setDisplayName] = useState(
+    localStorage.getItem("displayName") ||
+    localStorage.getItem("username") ||
+    ""
+  );
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
@@ -34,8 +39,14 @@ function Dashboard() {
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
+    const storedDisplayName = localStorage.getItem("displayName");
     if (storedUsername) {
       setUsername(storedUsername);
+    }
+    if (storedDisplayName){
+      setDisplayName(storedDisplayName);
+    } else if (storedUsername){
+      setDisplayName(storedUsername);
     }
   }, []);
 
@@ -134,6 +145,7 @@ function Dashboard() {
   const handleConfirmLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
+    localStorage.removeItem("displayName");
     setIsLogoutModalOpen(false);
     window.location.href = "/login";
   };
@@ -485,7 +497,7 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="phone-frame">
         <div className="dashboard-topbar">
-          <h2 className="greeting">👋 Hi, {username}!</h2>
+          <h2 className="greeting">👋 Hi, {displayName}!</h2>
           <ProfileMenu userEmail={username} onLogout={handleLogout} />
         </div>
 
