@@ -3,7 +3,7 @@ import axios from "axios";
 import { IoIosArrowDown } from "react-icons/io";
 import "./AddItemModal.css";
 
-function AddItemModal({ onClose, onAdd }) {
+function AddItemModal({ onClose, onAdd, selectedList }) {
   const [itemName, setItemName] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -51,11 +51,17 @@ function AddItemModal({ onClose, onAdd }) {
       return;
     }
 
+    if (!selectedList) {
+      alert("Please create or select a grocery list first.");
+      return;
+    }
+
     onAdd({
       name: trimmedName,
       category,
       quantity,
       checked: false,
+      list: selectedList._id,
     });
   };
 
