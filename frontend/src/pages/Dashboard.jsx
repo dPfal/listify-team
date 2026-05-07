@@ -13,29 +13,49 @@ import RenameListModal from "./RenameListModal";
 import AddItemModal from "./AddItemModal";
 import EditItemModal from "./EditItemModal";
 import ConfirmModal from "./ConfirmModal";
+import ProfileMenu from "./ProfileMenu";
 
 function Dashboard() {
   const [listName, setListName] = useState("My Grocery List");
   const [groceryData, setGroceryData] = useState([]);
-
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || ""
+  );
+  const [displayName, setDisplayName] = useState(
+    localStorage.getItem("displayName") ||
+    localStorage.getItem("username") ||
+    ""
+  );
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteCategoryIndex, setDeleteCategoryIndex] = useState(null);
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    const storedDisplayName = localStorage.getItem("displayName");
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+    if (storedDisplayName){
+      setDisplayName(storedDisplayName);
+    } else if (storedUsername){
+      setDisplayName(storedUsername);
+    }
+  }, []);
 
   const groupItemsByCategory = items => {
     return items.reduce((acc, item) => {
       const categoryName = item.category || "Uncategorized";
 
       const existingCategory = acc.find(
-        category => category.category === categoryName,
+        category => category.category === categoryName
       );
 
       const formattedItem = {
@@ -63,14 +83,11 @@ function Dashboard() {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch(
-          "http://localhost:5001/api/users/list-name",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const response = await fetch("/api/users/list-name", {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
         const data = await response.json();
 
@@ -93,7 +110,7 @@ function Dashboard() {
       try {
         const token = localStorage.getItem("token");
 
-        const response = await fetch("http://localhost:5001/api/items", {
+        const response = await fetch("/api/items", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -128,6 +145,7 @@ function Dashboard() {
   const handleConfirmLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
+    localStorage.removeItem("displayName");
     setIsLogoutModalOpen(false);
     window.location.href = "/login";
   };
@@ -147,17 +165,14 @@ function Dashboard() {
 
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        "http://localhost:5001/api/users/list-name",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ listName: trimmedTitle }),
+      const response = await fetch("/api/users/list-name", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({ listName: trimmedTitle }),
+      });
 
       const data = await response.json();
 
@@ -178,7 +193,7 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:5001/api/items", {
+      const response = await fetch("/api/items", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -200,7 +215,7 @@ function Dashboard() {
 
       setGroceryData(prevData => {
         const existingCategory = prevData.find(
-          category => category.category === data.category,
+          category => category.category === data.category
         );
 
         if (existingCategory) {
@@ -252,22 +267,19 @@ function Dashboard() {
 
       if (!currentItem) return;
 
-      const response = await fetch(
-        `http://localhost:5001/api/items/${itemId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: currentItem.name,
-            quantity: currentItem.quantity,
-            category: category.category,
-            purchased: !currentItem.checked,
-          }),
+      const response = await fetch(`/api/items/${itemId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          name: currentItem.name,
+          quantity: currentItem.quantity,
+          category: category.category,
+          purchased: !currentItem.checked,
+        }),
+      });
 
       const data = await response.json();
 
@@ -288,10 +300,10 @@ function Dashboard() {
                     ...item,
                     checked: data.purchased,
                   }
-                : item,
+                : item
             ),
           };
-        }),
+        })
       );
     } catch (error) {
       console.error("Toggle check error:", error);
@@ -312,22 +324,19 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `http://localhost:5001/api/items/${updatedItem.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: updatedItem.name,
-            quantity: updatedItem.quantity,
-            category: updatedItem.category,
-            purchased: updatedItem.checked,
-          }),
+      const response = await fetch(`/api/items/${updatedItem.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          name: updatedItem.name,
+          quantity: updatedItem.quantity,
+          category: updatedItem.category,
+          purchased: updatedItem.checked,
+        }),
+      });
 
       const data = await response.json();
 
@@ -353,7 +362,7 @@ function Dashboard() {
                         quantity: data.quantity,
                         checked: data.purchased,
                       }
-                    : item,
+                    : item
                 ),
               };
             }
@@ -383,7 +392,7 @@ function Dashboard() {
         });
 
         const categoryExists = updatedData.some(
-          category => category.category === newCategory,
+          category => category.category === newCategory
         );
 
         if (!categoryExists) {
@@ -422,15 +431,12 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        `http://localhost:5001/api/items/${itemToDelete}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await fetch(`/api/items/${itemToDelete}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       const data = await response.json();
 
@@ -449,7 +455,7 @@ function Dashboard() {
               items: category.items.filter(item => item.id !== itemToDelete),
             };
           })
-          .filter(category => category.items.length > 0),
+          .filter(category => category.items.length > 0)
       );
 
       setIsDeleteModalOpen(false);
@@ -465,7 +471,7 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:5001/api/items", {
+      const response = await fetch("/api/items", {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -491,10 +497,8 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="phone-frame">
         <div className="dashboard-topbar">
-          <h2 className="greeting">👋 Hi, yelimlee!</h2>
-          <button className="icon-button logout-button" onClick={handleLogout}>
-            <FiLogOut />
-          </button>
+          <h2 className="greeting">👋 Hi, {displayName}!</h2>
+          <ProfileMenu userEmail={username} onLogout={handleLogout} />
         </div>
 
         <div className="title-row">
