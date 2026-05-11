@@ -1,4 +1,5 @@
 const Item = require("../models/Item");
+const ItemFactory = require("../factories/itemFactory");
 
 const createItem = async (req, res) => {
   const { name, quantity, category, list } = req.body;
@@ -16,13 +17,8 @@ const createItem = async (req, res) => {
       });
     }
 
-    const item = await Item.create({
-      name: name.trim(),
-      quantity: quantity || 1,
-      category: category || "Uncategorized",
-      user: req.user.id,
-      list,
-    });
+    const itemData = ItemFactory.createItem(req.body, req.user.id);
+    const item = await Item.create(itemData);
 
     return res.status(201).json(item);
   } catch (error) {
