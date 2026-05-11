@@ -29,5 +29,6 @@ const protect = async (req, res, next) => {
     });
   }
 };
+console.log("JWT_SECRET VERIFY:", process.env.JWT_SECRET);
 
 module.exports = { protect };

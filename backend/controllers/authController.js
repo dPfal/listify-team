@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const List = require("../models/GroceryList");
 
 const registerUser = async (req, res) => {
   try {
@@ -25,6 +26,11 @@ const registerUser = async (req, res) => {
       listName: `${username}'s Grocery List`,
     });
 
+    await List.create({
+      title: "My First List",
+      user: user._id,
+      items: [],
+    });
     res.status(201).json({
       message: "User registered successfully",
       user: {
@@ -64,7 +70,7 @@ const loginUser = async (req, res) => {
         username: user.username,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" },
+      { expiresIn: "1d" }
     );
 
     res.status(200).json({
