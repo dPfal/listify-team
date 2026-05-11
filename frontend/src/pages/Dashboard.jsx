@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  FiEdit2,
-  FiPlus,
-  FiX,
-  FiSquare,
-  FiCheckSquare,
-} from "react-icons/fi";
+import { FiEdit2, FiPlus, FiX, FiSquare, FiCheckSquare } from "react-icons/fi";
 
 import "./Dashboard.css";
 import RenameListModal from "./RenameListModal";
@@ -82,7 +76,6 @@ function Dashboard() {
       return acc;
     }, []);
   };
-
 
   const fetchLists = async () => {
     try {
