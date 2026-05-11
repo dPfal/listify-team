@@ -502,8 +502,9 @@ function Dashboard() {
             <div className="dashboard-title">{listName}</div>
             <button
               className="icon-button edit-button"
-              onClick={handleEditTitle}>
-              <FiEdit2 />
+              onClick={handleEditTitle}
+              disabled={!selectedList}>
+              <FiEdit2 size={20} />
             </button>
           </div>
 
