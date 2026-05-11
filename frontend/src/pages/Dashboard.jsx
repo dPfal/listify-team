@@ -620,7 +620,7 @@ function Dashboard() {
               className="icon-button edit-button"
               onClick={handleEditTitle}
               disabled={!selectedList}>
-              <FiEdit2 />
+              <FiEdit2 size={20} />
             </button>
           </div>
 
