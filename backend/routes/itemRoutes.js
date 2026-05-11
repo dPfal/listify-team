@@ -16,7 +16,7 @@ const { validateItemInput } = require("../middleware/validationMiddleware");
 module.exports = router;
 router.post("/", protect, loggingMiddleware,validateItemInput, createItem);
 router.get("/", protect, loggingMiddleware, getItems);
-router.get("/suggestions", protect,loggingMiddleware, validateItemInpu, getItemSuggestions);
+router.get("/suggestions", protect,loggingMiddleware, validateItemInput, getItemSuggestions);
 router.put("/:id", protect, loggingMiddleware, validateItemInput, updateItem);
 router.delete("/:id", protect, loggingMiddleware, deleteItem);
 router.delete("/", protect, loggingMiddleware, clearAllItems);
