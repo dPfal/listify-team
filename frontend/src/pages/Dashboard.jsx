@@ -254,6 +254,52 @@ function Dashboard() {
     setIsListDropdownOpen(false);
   };
 
+  const handleDeleteList = async listId => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this list? All items in this list will be deleted."
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`/api/lists/${listId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || "Failed to delete list");
+      return;
+    }
+
+    const updatedLists = lists.filter(list => list._id !== listId);
+    setLists(updatedLists);
+
+    if (selectedList?._id === listId) {
+      if (updatedLists.length > 0) {
+        setSelectedList(updatedLists[0]);
+        setListName(updatedLists[0].title);
+        fetchItems(updatedLists[0]._id);
+      } else {
+        setSelectedList(null);
+        setListName("My Grocery List");
+        setGroceryData([]);
+      }
+    }
+
+    setIsListDropdownOpen(false);
+  } catch (error) {
+    console.error("Delete list error:", error);
+    alert("Server error");
+  }
+};
+
   const handleCreateItem = async newItem => {
     try {
       const token = localStorage.getItem("token");
@@ -587,8 +633,7 @@ function Dashboard() {
                     <div className="list-dropdown-empty">No lists yet</div>
                   ) : (
                     lists.map(list => (
-                      <button
-                        type="button"
+                      <div
                         key={list._id}
                         className={
                           selectedList?._id === list._id
@@ -596,8 +641,18 @@ function Dashboard() {
                             : "list-dropdown-item"
                         }
                         onClick={() => handleSelectList(list)}>
-                        {list.title}
-                      </button>
+                        <span>{list.title}</span>
+
+                        <button
+                          type="button"
+                          className="delete-list-button"
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleDeleteList(list._id);
+                          }}>
+                          ×
+                        </button>
+                      </div>
                     ))
                   )}
 
@@ -620,7 +675,7 @@ function Dashboard() {
               className="icon-button edit-button"
               onClick={handleEditTitle}
               disabled={!selectedList}>
-              <FiEdit2 />
+              <FiEdit2 size={20} />
             </button>
           </div>
 
