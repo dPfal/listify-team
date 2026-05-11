@@ -237,6 +237,8 @@
   border-radius: 18px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
   padding: 10px;
+  box-sizing: border-box;
+  overflow: hidden;
   z-index: 50;
 }
 
@@ -248,20 +250,54 @@
 
 .list-dropdown-item {
   width: 100%;
+  box-sizing: border-box;
   border: none;
   background: transparent;
   border-radius: 12px;
-  padding: 12px;
+  padding: 12px 14px;
   text-align: left;
   cursor: pointer;
   color: #111111;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .list-dropdown-item:hover,
 .list-dropdown-item.active {
   background: #f1f1f1;
   font-weight: 700;
+}
+
+.delete-list-button {
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.list-dropdown-item:hover .delete-list-button,
+.list-dropdown-item.active .delete-list-button {
+  opacity: 1;
+}
+
+.delete-list-button:hover {
+  background: #f8d7da;
+  color: #b91c1c;
 }
 
 .new-list-box {
@@ -275,6 +311,8 @@
 
 .new-list-box input {
   border: 1px solid #dddddd;
+  box-sizing: border-box;
+  width: 100%;
   border-radius: 10px;
   padding: 10px;
   font-size: 14px;
@@ -282,6 +320,8 @@
 
 .new-list-box button {
   border: none;
+  box-sizing: border-box;
+  width: 100%;
   border-radius: 10px;
   padding: 10px;
   background: #111111;
