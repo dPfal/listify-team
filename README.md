@@ -1,132 +1,170 @@
+# Listify - Grocery List Manager (Team 20)
 
-# Listify - Grocery List Manager (Yelim Lee N12278491)
+This project was developed as part of IFN636 Software Life Cycle Management Assessment 2.
 
-This project was developed as part of IFN636 Software Life Cycle Management.
+Listify is a full-stack grocery list management web application designed to help users organize and manage grocery items efficiently.  
+The system supports secure authentication, multiple grocery lists, profile management, intelligent item suggestions, and category-based organization to improve the overall shopping experience.
 
-Listify is a full-stack web application that allows users to manage grocery lists efficiently.
-Users can create, view, update, and delete grocery items.
-The system includes secure user authentication and supports category management for better organization.
+---
 
 ## Live Demo
 
 Public URL:  
-http://13.211.74.49
+http://13.210.13.18/
+
+---
 
 ## Features
 
-- User Registration and Login (Authentication)
-- Create, Read, Update, Delete (CRUD) Grocery Items
-- Category Selection for Items
-- Mark Items as Completed
-- Authentication using JWT
+### User Features
+- User Registration and Login
+- JWT-based Authentication and Authorization
+- Create Multiple Grocery Lists
+- Create, Read, Update, and Delete Grocery Items
+- Mark Grocery Items as Completed
+- Category-based Grocery Organization
+- Intelligent Item Suggestions
+- User Profile Management
+- Update Username and Profile Information
+- Responsive Mobile-first UI Design
+- Protected User Dashboard
+
+### Developer Features
+- RESTful API Development
+- Frontend and Backend Validation
+- Middleware-based Route Protection
+- API Testing
+- Functional Testing
+- CI/CD Pipeline using GitHub Actions
+- Cloud Deployment using AWS EC2
+- Process Management using PM2
+- Reverse Proxy Configuration using Nginx
+- GitHub Branching and Pull Request Workflow
+
+---
 
 ## Demo Account
 
-You can use the following demo account to test the application with pre-populated grocery list data:
+You can use the following demo account to test the system:
 
 - Username: user1
 - Password: user1234
 
-This account already contains sample grocery items to help demonstrate the core functionality of the system.
+This account contains sample grocery data for demonstration purposes.
+
+---
 
 ## Tech Stack
 
-- Frontend: React
-- Backend: Node.js, Express
-- Database: MongoDB
-- Deployment: AWS EC2
-- Process Manager: PM2
-- Web Server: Nginx
-- CI/CD: GitHub Actions
+### Frontend
+- React
+- React Router
+- Axios
+
+### Backend
+- Node.js
+- Express.js
+
+### Database
+- MongoDB
+- Mongoose
+
+### DevOps and Deployment
+- AWS EC2
+- PM2
+- Nginx
+- GitHub Actions
+
+### Testing
+- Mocha
+- Chai
+- Sinon
+
+---
 
 ## System Architecture
 
-- Frontend is built using React and served via Nginx
-- Backend is built with Express and runs on port 5001
-- MongoDB is used for data storage
-- PM2 is used to keep backend running
-- GitHub Actions automates testing and build
+- Frontend is developed using React and served through Nginx.
+- Backend API is developed using Express.js and runs on port 5001.
+- MongoDB is used for persistent data storage.
+- PM2 is used to maintain backend process reliability.
+- GitHub Actions automates testing and deployment workflows.
 
-## Design Approach
+---
 
-The application adopts a mobile-first design approach, focusing on simplicity, accessibility, and efficient user interaction.  
-This ensures that users can quickly manage their grocery lists in real-world scenarios, even on smaller devices.
+## Key Functionalities
 
-## Installation
+### Grocery List Management
+Users can create and manage multiple grocery lists for different purposes such as weekly shopping, meal preparation, or household supplies.
 
-### Clone the repository
+### Grocery Item Management
+Users can add, update, delete, and organize grocery items within each list.
 
-```bash
-git clone https://github.com/dPfal/listify
-cd listify
-```
+### Item Suggestion Feature
+The system provides grocery item suggestions to improve user convenience and reduce repetitive input.
 
-### Backend Setup
+### User Profile Management
+Users can manage their account information and personalize their profile settings securely.
 
-```bash
-cd backend
-npm install
-```
+### Authentication and Security
+JWT authentication and protected backend middleware are used to secure user data and restrict unauthorized access.
 
-### Environment Setup
+---
 
-Create a `.env` file in the backend directory based on the `.env.example` file:
+## Team Collaboration
 
-```bash
-cp .env.example .env
-```
+The project was developed collaboratively by Team 20 using Agile-inspired workflows and GitHub version control practices.
 
-### Run Backend
+The team used:
+- Feature branches
+- Pull requests
+- Code reviews
+- Commit tracking
+- GitHub Actions workflows
 
-```bash
-npm run dev
-```
+to support collaborative software development and continuous integration.
 
-### Frontend Setup
+---
 
-```bash
-cd ../frontend
-npm install
-npm run dev
-```
+## CI/CD Pipeline
 
-### Deployment
+GitHub Actions is configured to:
+- Install dependencies automatically
+- Run backend automated tests
+- Validate workflow execution
+- Support deployment automation
 
-```bash
-pm2 start index.js --name backend
-pm2 save
-pm2 startup
-```
+The CI/CD pipeline helps improve reliability and maintain consistent software quality.
 
-## Assessment 2 Requirements
+---
 
-This project is developed as part of IFN636 Assessment 2. The following components are included:
+## Testing
 
-### 1. Software Requirements Specification (SRS)
-- Basic SRS documentation outlining system scope, functional and non-functional requirements.
+### Functional Testing
+- Authentication verification
+- Multiple grocery list testing
+- Grocery item CRUD testing
+- Profile management testing
+- Item completion workflow testing
+- Item suggestion validation
 
-### 2. Design Patterns and OOP Principles
-- Application of appropriate design patterns.
-- Use of Object-Oriented Programming principles such as encapsulation, modularity, and separation of concerns.
+### API Testing
+- Endpoint validation
+- HTTP response verification
+- Error handling validation
 
-### 3. API Testing
-- Testing backend API endpoints using tools such as Postman or automated scripts.
+### Automated Testing
+- Unit testing using Mocha, Chai, and Sinon
 
-### 4. Functional Testing
-- Verification of system functionality based on defined requirements.
+---
 
-### 5. CI/CD Pipeline
-- Implementation of continuous integration and continuous deployment using GitHub Actions.
+## Future Improvements
 
-### 6. Load Balancing and Load Testing
-- System performance testing under load conditions.
-- Use of load balancing techniques where applicable.
-
-### 7. Team Collaboration
-- Use of GitHub for version control.
-- Branching strategy and pull request workflow.
-- Clear contribution tracking among team members.
-
-### 8. Report
-- A comprehensive report documenting the system design, implementation, testing, and evaluation.
-
+Potential future improvements include:
+- Shared grocery lists between users
+- Real-time synchronization
+- AI-powered shopping recommendations
+- Barcode scanning support
+- Push notifications
+- Docker containerization
+- HTTPS configuration
