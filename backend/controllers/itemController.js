@@ -1,5 +1,6 @@
 const Item = require("../models/Item");
 const ItemFactory = require("../factories/itemFactory");
+const { ItemSorter, SortByName, SortByCategory, SortByDate } = require("../services/ItemSortStrategy");
 
 const createItem = async (req, res) => {
   const { name, quantity, category, list } = req.body;
@@ -99,11 +100,20 @@ const getItems = async (req, res) => {
       filter.list = req.query.list;
     }
 
-    const items = await Item.find(filter).sort({
-      createdAt: -1,
-    });
+    const items = await Item.find(filter);
 
-    return res.status(200).json(items);
+    // Strategy pattern — pick sort based on query param ?sort=name|category|date
+    const sortMap = {
+      name: new SortByName(),
+      category: new SortByCategory(),
+      date: new SortByDate(),
+    };
+
+    const strategy = sortMap[req.query.sort] || new SortByDate(); // default: date
+    const sorter = new ItemSorter(strategy);
+    const sortedItems = sorter.sort(items);
+
+    return res.status(200).json(sortedItems);
   } catch (error) {
     return res.status(500).json({
       message: "Failed to fetch items",
