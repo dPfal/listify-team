@@ -24,11 +24,6 @@ const itemSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    list: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "GroceryList",
-      required: true,
-    },
   },
   { timestamps: true },
 );

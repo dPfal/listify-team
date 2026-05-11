@@ -1,46 +1,12 @@
 import { useState } from "react";
-import axios from "axios";
 import { IoIosArrowDown } from "react-icons/io";
 import "./AddItemModal.css";
 
-function AddItemModal({ onClose, onAdd, selectedList }) {
+function AddItemModal({ onClose, onAdd }) {
   const [itemName, setItemName] = useState("");
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-
-  const handleItemNameChange = async e => {
-    const value = e.target.value;
-    setItemName(value);
-
-    if (!value.trim()) {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await axios.get(
-        `http://localhost:5001/api/items/suggestions?query=${encodeURIComponent(value)}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setSuggestions(response.data);
-      setShowSuggestions(true);
-    } catch (error) {
-      console.error("Failed to fetch item suggestions:", error);
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-  };
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -51,17 +17,11 @@ function AddItemModal({ onClose, onAdd, selectedList }) {
       return;
     }
 
-    if (!selectedList) {
-      alert("Please create or select a grocery list first.");
-      return;
-    }
-
     onAdd({
       name: trimmedName,
       category,
       quantity,
       checked: false,
-      list: selectedList._id,
     });
   };
 
@@ -81,37 +41,13 @@ function AddItemModal({ onClose, onAdd, selectedList }) {
         <h2 className="add-item-title">ADD ITEM</h2>
 
         <form className="add-item-form" onSubmit={handleSubmit}>
-          <div className="suggestion-wrapper">
-            <input
-              type="text"
-              className="add-item-input"
-              placeholder="Item"
-              value={itemName}
-              onChange={handleItemNameChange}
-              onFocus={() => {
-                if (suggestions.length > 0) {
-                  setShowSuggestions(true);
-                }
-              }}
-            />
-
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="suggestions-dropdown">
-                {suggestions.map(suggestion => (
-                  <div
-                    key={suggestion}
-                    className="suggestion-item"
-                    onClick={() => {
-                      setItemName(suggestion);
-                      setSuggestions([]);
-                      setShowSuggestions(false);
-                    }}>
-                    {suggestion}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <input
+            type="text"
+            className="add-item-input"
+            placeholder="Item"
+            value={itemName}
+            onChange={e => setItemName(e.target.value)}
+          />
 
           <div className="custom-select">
             <div className="select-box" onClick={() => setIsOpen(!isOpen)}>

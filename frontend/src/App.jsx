@@ -3,7 +3,6 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
-import EditProfile from "./pages/EditProfile";
 
 function App() {
   const isLoggedIn = !!localStorage.getItem("token");
@@ -31,11 +30,6 @@ function App() {
         <Route
           path="/dashboard"
           element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />}
-        />
-
-        <Route
-          path="/edit-profile"
-          element={isLoggedIn ? <EditProfile /> : <Navigate to="/login" />}
         />
 
         <Route

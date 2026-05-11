@@ -1,60 +1,41 @@
 import { useState, useEffect } from "react";
-import { FiEdit2, FiPlus, FiX, FiSquare, FiCheckSquare } from "react-icons/fi";
+import {
+  FiLogOut,
+  FiEdit2,
+  FiPlus,
+  FiX,
+  FiSquare,
+  FiCheckSquare,
+} from "react-icons/fi";
 
 import "./Dashboard.css";
 import RenameListModal from "./RenameListModal";
 import AddItemModal from "./AddItemModal";
 import EditItemModal from "./EditItemModal";
 import ConfirmModal from "./ConfirmModal";
-import ProfileMenu from "./ProfileMenu";
 
 function Dashboard() {
   const [listName, setListName] = useState("My Grocery List");
   const [groceryData, setGroceryData] = useState([]);
-  const [lists, setLists] = useState([]);
-  const [selectedList, setSelectedList] = useState(null);
-  const [isListDropdownOpen, setIsListDropdownOpen] = useState(false);
-  const [newListTitle, setNewListTitle] = useState("");
+
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [username, setUsername] = useState(
-    localStorage.getItem("username") || ""
-  );
-  const [displayName, setDisplayName] = useState(
-    localStorage.getItem("displayName") ||
-      localStorage.getItem("username") ||
-      ""
-  );
+
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteCategoryIndex, setDeleteCategoryIndex] = useState(null);
-
-  useEffect(() => {
-    const storedUsername = localStorage.getItem("username");
-    const storedDisplayName = localStorage.getItem("displayName");
-
-    if (storedUsername) {
-      setUsername(storedUsername);
-    }
-
-    if (storedDisplayName) {
-      setDisplayName(storedDisplayName);
-    } else if (storedUsername) {
-      setDisplayName(storedUsername);
-    }
-  }, []);
 
   const groupItemsByCategory = items => {
     return items.reduce((acc, item) => {
       const categoryName = item.category || "Uncategorized";
 
       const existingCategory = acc.find(
-        category => category.category === categoryName
+        category => category.category === categoryName,
       );
 
       const formattedItem = {
@@ -77,80 +58,64 @@ function Dashboard() {
     }, []);
   };
 
-  const fetchLists = async () => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch("/api/lists", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error(data.message || "Failed to fetch lists");
-        return;
-      }
-
-      setLists(data);
-
-      if (data.length > 0) {
-        setSelectedList(prevSelectedList => prevSelectedList || data[0]);
-        setListName(data[0].title);
-      } else {
-        setSelectedList(null);
-        setListName("My Grocery List");
-      }
-    } catch (error) {
-      console.error("Fetch lists error:", error);
-    }
-  };
-
-  const fetchItems = async listId => {
-    if (!listId) {
-      setGroceryData([]);
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(`/api/items?list=${listId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error(data.message || "Failed to fetch items");
-        return;
-      }
-
-      const groupedData = groupItemsByCategory(data);
-      setGroceryData(groupedData);
-    } catch (error) {
-      console.error("Fetch items error:", error);
-    }
-  };
-
   useEffect(() => {
-    fetchLists();
+    const fetchListName = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+          "http://localhost:5001/api/users/list-name",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error(data.message || "Failed to fetch list name");
+          return;
+        }
+
+        setListName(data.listName);
+      } catch (error) {
+        console.error("Error fetching list name:", error);
+      }
+    };
+
+    fetchListName();
   }, []);
 
   useEffect(() => {
-    if (selectedList) {
-      setListName(selectedList.title);
-      fetchItems(selectedList._id);
-    } else {
-      setGroceryData([]);
-    }
-  }, [selectedList]);
+    const fetchItems = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch("http://localhost:5001/api/items", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error(data.message || "Failed to fetch items");
+          return;
+        }
+
+        const groupedData = groupItemsByCategory(data);
+        setGroceryData(groupedData);
+      } catch (error) {
+        console.error("Fetch items error:", error);
+      }
+    };
+
+    fetchItems();
+  }, []);
 
   const handleAddItem = () => {
     setIsAddModalOpen(true);
@@ -163,7 +128,6 @@ function Dashboard() {
   const handleConfirmLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
-    localStorage.removeItem("displayName");
     setIsLogoutModalOpen(false);
     window.location.href = "/login";
   };
@@ -183,19 +147,17 @@ function Dashboard() {
 
       const token = localStorage.getItem("token");
 
-      if (!selectedList) {
-        alert("Please create or select a grocery list first");
-        return;
-      }
-
-      const response = await fetch(`/api/lists/${selectedList._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        "http://localhost:5001/api/users/list-name",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ listName: trimmedTitle }),
         },
-        body: JSON.stringify({ title: trimmedTitle }),
-      });
+      );
 
       const data = await response.json();
 
@@ -204,11 +166,7 @@ function Dashboard() {
         return;
       }
 
-      setListName(data.title);
-      setSelectedList(data);
-      setLists(prevLists =>
-        prevLists.map(list => (list._id === data._id ? data : list))
-      );
+      setListName(data.listName);
       setIsRenameModalOpen(false);
     } catch (error) {
       console.error("Update list name error:", error);
@@ -216,49 +174,11 @@ function Dashboard() {
     }
   };
 
-  const handleCreateList = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const title = newListTitle.trim() || "My Grocery List";
-
-      const response = await fetch("/api/lists", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message || "Failed to create list");
-        return;
-      }
-
-      setLists(prevLists => [data, ...prevLists]);
-      setSelectedList(data);
-      setListName(data.title);
-      setNewListTitle("");
-      setIsListDropdownOpen(false);
-    } catch (error) {
-      console.error("Create list error:", error);
-      alert("Server error");
-    }
-  };
-
-  const handleSelectList = list => {
-    setSelectedList(list);
-    setListName(list.title);
-    setIsListDropdownOpen(false);
-  };
-
   const handleCreateItem = async newItem => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("/api/items", {
+      const response = await fetch("http://localhost:5001/api/items", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -268,7 +188,6 @@ function Dashboard() {
           name: newItem.name,
           quantity: newItem.quantity,
           category: newItem.category,
-          list: newItem.list,
         }),
       });
 
@@ -281,7 +200,7 @@ function Dashboard() {
 
       setGroceryData(prevData => {
         const existingCategory = prevData.find(
-          category => category.category === data.category
+          category => category.category === data.category,
         );
 
         if (existingCategory) {
@@ -333,19 +252,22 @@ function Dashboard() {
 
       if (!currentItem) return;
 
-      const response = await fetch(`/api/items/${itemId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `http://localhost:5001/api/items/${itemId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: currentItem.name,
+            quantity: currentItem.quantity,
+            category: category.category,
+            purchased: !currentItem.checked,
+          }),
         },
-        body: JSON.stringify({
-          name: currentItem.name,
-          quantity: currentItem.quantity,
-          category: category.category,
-          purchased: !currentItem.checked,
-        }),
-      });
+      );
 
       const data = await response.json();
 
@@ -366,10 +288,10 @@ function Dashboard() {
                     ...item,
                     checked: data.purchased,
                   }
-                : item
+                : item,
             ),
           };
-        })
+        }),
       );
     } catch (error) {
       console.error("Toggle check error:", error);
@@ -390,19 +312,22 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`/api/items/${updatedItem.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `http://localhost:5001/api/items/${updatedItem.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: updatedItem.name,
+            quantity: updatedItem.quantity,
+            category: updatedItem.category,
+            purchased: updatedItem.checked,
+          }),
         },
-        body: JSON.stringify({
-          name: updatedItem.name,
-          quantity: updatedItem.quantity,
-          category: updatedItem.category,
-          purchased: updatedItem.checked,
-        }),
-      });
+      );
 
       const data = await response.json();
 
@@ -428,7 +353,7 @@ function Dashboard() {
                         quantity: data.quantity,
                         checked: data.purchased,
                       }
-                    : item
+                    : item,
                 ),
               };
             }
@@ -458,7 +383,7 @@ function Dashboard() {
         });
 
         const categoryExists = updatedData.some(
-          category => category.category === newCategory
+          category => category.category === newCategory,
         );
 
         if (!categoryExists) {
@@ -497,12 +422,15 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`/api/items/${itemToDelete}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `http://localhost:5001/api/items/${itemToDelete}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       const data = await response.json();
 
@@ -521,7 +449,7 @@ function Dashboard() {
               items: category.items.filter(item => item.id !== itemToDelete),
             };
           })
-          .filter(category => category.items.length > 0)
+          .filter(category => category.items.length > 0),
       );
 
       setIsDeleteModalOpen(false);
@@ -537,11 +465,7 @@ function Dashboard() {
     try {
       const token = localStorage.getItem("token");
 
-      const clearUrl = selectedList
-        ? `/api/items?list=${selectedList._id}`
-        : "/api/items";
-
-      const response = await fetch(clearUrl, {
+      const response = await fetch("http://localhost:5001/api/items", {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -567,55 +491,15 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="phone-frame">
         <div className="dashboard-topbar">
-          <h2 className="greeting">👋 Hi, {displayName}!</h2>
-          <ProfileMenu userEmail={username} onLogout={handleLogout} />
+          <h2 className="greeting">👋 Hi, yelimlee!</h2>
+          <button className="icon-button logout-button" onClick={handleLogout}>
+            <FiLogOut />
+          </button>
         </div>
 
         <div className="title-row">
           <div className="title-left">
-            <div className="list-selector-wrapper">
-              <button
-                type="button"
-                className="dashboard-title list-selector-button"
-                onClick={() => setIsListDropdownOpen(!isListDropdownOpen)}>
-                {listName} <span className="list-arrow">⌄</span>
-              </button>
-
-              {isListDropdownOpen && (
-                <div className="list-dropdown">
-                  {lists.length === 0 ? (
-                    <div className="list-dropdown-empty">No lists yet</div>
-                  ) : (
-                    lists.map(list => (
-                      <button
-                        type="button"
-                        key={list._id}
-                        className={
-                          selectedList?._id === list._id
-                            ? "list-dropdown-item active"
-                            : "list-dropdown-item"
-                        }
-                        onClick={() => handleSelectList(list)}>
-                        {list.title}
-                      </button>
-                    ))
-                  )}
-
-                  <div className="new-list-box">
-                    <input
-                      type="text"
-                      placeholder="New list name"
-                      value={newListTitle}
-                      onChange={e => setNewListTitle(e.target.value)}
-                    />
-                    <button type="button" onClick={handleCreateList}>
-                      + New List
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
+            <div className="dashboard-title">{listName}</div>
             <button
               className="icon-button edit-button"
               onClick={handleEditTitle}
@@ -707,7 +591,6 @@ function Dashboard() {
 
       {isAddModalOpen && (
         <AddItemModal
-          selectedList={selectedList}
           onClose={() => setIsAddModalOpen(false)}
           onAdd={newItem => {
             handleCreateItem(newItem);
