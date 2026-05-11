@@ -11,16 +11,19 @@
   width: 320px;
   background-color: #ffffff;
   border-radius: 16px;
-  padding: 24px;
+  padding: 40px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  font-family: Arial, sans-serif;
 }
 
 .edit-profile-title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 900;
   color: #111111;
   text-align: center;
+  text-transform: uppercase;
+  font-family: Arial, sans-serif;
+  margin-bottom: 0px;
 }
 
 .edit-profile-subtitle {
