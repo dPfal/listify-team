@@ -3,57 +3,60 @@ import { useNavigate } from "react-router-dom";
 import "./EditProfile.css";
 
 function EditProfile() {
-    const navigate = useNavigate();
-    const [displayName, setDisplayName] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [profileMessage, setProfileMessage] = useState("");
+  const navigate = useNavigate();
+  const [displayName, setDisplayName] = useState(
+    localStorage.getItem("displayName") || localStorage.getItem("username") || ""
+  );
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [profileMessage, setProfileMessage] = useState("");
 
-    const handleSaveProfile = async (event) => {
-        event.preventDefault();
-        if (newPassword && newPassword !== confirmPassword) {
-            setProfileMessage("Passwords do not match.");
-            return;
-        }
+  const handleSaveProfile = async event => {
+    event.preventDefault();
 
-        try {
-            const token = localStorage.getItem("token");
+    if (newPassword && newPassword !== confirmPassword) {
+      setProfileMessage("Passwords do not match.");
+      return;
+    }
 
-            const response = await fetch("/api/users/profile", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    displayName: displayName,
-                    password: newPassword,
-                }),
-            });
+    try {
+      const token = localStorage.getItem("token");
 
-            const data = await response.json();
+      const response = await fetch("/api/users/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          displayName: displayName,
+          password: newPassword,
+        }),
+      });
 
-            if (!response.ok) {
-                setProfileMessage(data.message || "Profile update failed.");
-                return;
-            }
+      const data = await response.json();
 
-            localStorage.setItem("username", data.user.username);
-            localStorage.setItem("displayName", data.user.displayName || "");
+      if (!response.ok) {
+        setProfileMessage(data.message || "Profile update failed.");
+        return;
+      }
 
-            setProfileMessage("Profile updated successfully.");
-            navigate("/dashboard");
-        } catch (error) {
-            setProfileMessage("Unable to update profile. Please try again.");
-        }
-    };
+      localStorage.setItem("username", data.user.username);
+      localStorage.setItem("displayName", data.user.displayName || "");
+
+      setProfileMessage("Profile updated successfully.");
+      navigate("/dashboard");
+    } catch (error) {
+      setProfileMessage("Unable to update profile. Please try again.");
+    }
+  };
 
   return (
     <div className="edit-profile-page">
       <div className="edit-profile-card">
         <h1 className="edit-profile-title">Edit Profile</h1>
         <p className="edit-profile-subtitle">
-          Update your name and password.
+          Update your display name and password.
         </p>
 
         {profileMessage && (
@@ -67,7 +70,7 @@ function EditProfile() {
             type="text"
             placeholder="Enter your display name"
             value={displayName}
-            onChange={(event) => setDisplayName(event.target.value)}
+            onChange={event => setDisplayName(event.target.value)}
           />
 
           <label className="edit-profile-label">New Password</label>
@@ -76,7 +79,7 @@ function EditProfile() {
             type="password"
             placeholder="Leave blank if unchanged"
             value={newPassword}
-            onChange={(event) => setNewPassword(event.target.value)}
+            onChange={event => setNewPassword(event.target.value)}
           />
 
           <label className="edit-profile-label">Confirm Password</label>
@@ -85,11 +88,14 @@ function EditProfile() {
             type="password"
             placeholder="Confirm new password"
             value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
+            onChange={event => setConfirmPassword(event.target.value)}
           />
 
           <div className="edit-profile-actions">
-            <button type="button" className="edit-profile-cancel" onClick={() => navigate("/Dashboard")}>
+            <button
+              type="button"
+              className="edit-profile-cancel"
+              onClick={() => navigate("/dashboard")}>
               Cancel
             </button>
 
