@@ -1,5 +1,6 @@
-const GroceryList = require("../models/GroceryLIst");
+const GroceryList = require("../models/GroceryList");
 const Item = require("../models/Item");
+const DashboardFacade = require("../services/DashboardFacade");
 
 const createList = async (req, res) => {
   const { title } = req.body;
@@ -21,11 +22,8 @@ const createList = async (req, res) => {
 
 const getLists = async (req, res) => {
   try {
-    const lists = await GroceryList.find({ user: req.user.id }).sort({
-      createdAt: -1,
-    });
-
-    return res.status(200).json(lists);
+    const dashboardData = await DashboardFacade.getUserDashboard(req.user.id);
+    return res.status(200).json(dashboardData);
   } catch (error) {
     return res.status(500).json({
       message: "Failed to fetch grocery lists",
