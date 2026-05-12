@@ -5,19 +5,12 @@ import "./EditProfile.css";
 function EditProfile() {
     const navigate = useNavigate();
     const [displayName, setDisplayName] = useState("");
-    const [email, setEmail] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [profileMessage, setProfileMessage] = useState("");
 
     const handleSaveProfile = async (event) => {
         event.preventDefault();
-
-        if (!email) {
-            setProfileMessage("Email is required.");
-            return;
-        }
-
         if (newPassword && newPassword !== confirmPassword) {
             setProfileMessage("Passwords do not match.");
             return;
@@ -34,7 +27,6 @@ function EditProfile() {
                 },
                 body: JSON.stringify({
                     displayName: displayName,
-                    username: email,
                     password: newPassword,
                 }),
             });
@@ -61,7 +53,7 @@ function EditProfile() {
       <div className="edit-profile-card">
         <h1 className="edit-profile-title">Edit Profile</h1>
         <p className="edit-profile-subtitle">
-          Update your name, email address, and password.
+          Update your name and password.
         </p>
 
         {profileMessage && (
@@ -76,15 +68,6 @@ function EditProfile() {
             placeholder="Enter your display name"
             value={displayName}
             onChange={(event) => setDisplayName(event.target.value)}
-          />
-
-          <label className="edit-profile-label">Email</label>
-          <input
-            className="edit-profile-input"
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
           />
 
           <label className="edit-profile-label">New Password</label>
