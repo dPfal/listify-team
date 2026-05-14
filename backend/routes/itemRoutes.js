@@ -9,6 +9,7 @@ const {
   clearAllItems,
   getItemSuggestions,
 } = require("../controllers/itemController.js");
+
 const { protect } = require("../middleware/authMiddleware");
 const loggingMiddleware = require("../middleware/loggingMiddleware");
 const { validateItemInput } = require("../middleware/validationMiddleware");
@@ -20,4 +21,5 @@ router.get("/suggestions", protect, loggingMiddleware, getItemSuggestions);
 router.put("/:id", protect, loggingMiddleware, validateItemInput, updateItem);
 router.delete("/:id", protect, loggingMiddleware, deleteItem);
 router.delete("/", protect, loggingMiddleware, clearAllItems);
+
 module.exports = router;
