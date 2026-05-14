@@ -1,4 +1,3 @@
-// config/db.js
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
