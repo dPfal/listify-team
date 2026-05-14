@@ -44,11 +44,7 @@ const updateListName = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const { displayName, username, password } = req.body;
-
-    if (!username || !username.trim()) {
-      return res.status(400).json({ message: "Email is required" });
-    }
+    const { displayName, password } = req.body;
 
     const user = await User.findById(req.user.id);
 
@@ -57,7 +53,6 @@ const updateProfile = async (req, res) => {
     }
 
     user.displayName = displayName ? displayName.trim() : user.displayName;
-    user.username = username.trim();
 
     if (password && password.trim()) {
       user.password = await bcrypt.hash(password, 10);
